@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>EllipticBit.SDLang.Tests</RootNamespace>
+		<AssemblyName>EllipticBit.SDLang.Tests</AssemblyName>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+		<OutputType>Library</OutputType>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);CA1707;CA2007;CA1861</NoWarn>
+		</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.7.0" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\EllipticBit.SDLang\EllipticBit.SDLang.csproj" />
+		<ProjectReference Include="..\..\src\EllipticBit.SDLang.DependencyInjection\EllipticBit.SDLang.DependencyInjection.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,55 @@
+.build_template:
+    before_script:
+        - "git clean -fdxq"
+        - "git submodule sync --recursive"
+        - "git submodule update --init --recursive"
+        - "git submodule foreach --recursive git reset --hard"
+
+.publish_template:
+    before_script:
+        - "git clean -fdxq"
+        - "git submodule sync --recursive"
+        - "git submodule update --init --recursive"
+        - "git submodule foreach --recursive git reset --hard"
+        - "dotnet tool install --global --prerelease sign"
+        - "az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID"
+        - "az account set --subscription $AZURE_SUBSCRIPTION"
+    after_script:
+        - "az logout"
+
+stages:
+  - test
+  - deploy
+
+Test SDLang:
+  extends: .build_template
+  stage: test
+  tags:
+    - windows
+    - dotnet
+
+  script:
+    - "dotnet restore"
+    - "dotnet test"
+
+Deploy SDLang Packages:
+  extends: .publish_template
+  stage: deploy
+  tags:
+    - windows
+    - dotnet
+
+  only:
+    refs:
+      - master
+    changes:
+      - src/**/*
+
+  script:
+    - "pwsh -f ./ReplaceVersion.ps1"
+    - "dotnet restore"
+    - "dotnet pack -c Release -o ./"
+    - "dotnet nuget push EllipticBit.SDLang.2.*.nupkg -s \"https://api.nuget.org/v3/index.json\" -k $NUGET_TOKEN --skip-duplicate"
+    - "dotnet nuget push EllipticBit.SDLang.DependencyInjection.2.*.nupkg -s \"https://api.nuget.org/v3/index.json\" -k $NUGET_TOKEN --skip-duplicate"
+    - "dotnet nuget push EllipticBit.SDLang.AspNetCore.2.*.nupkg -s \"https://api.nuget.org/v3/index.json\" -k $NUGET_TOKEN --skip-duplicate"
+    - "pwsh -f \"./IncrementVersion.ps1\""

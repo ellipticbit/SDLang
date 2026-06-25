@@ -1,0 +1,47 @@
+<Project>
+
+	<!--
+	Shared build settings for every project in the EllipticBit.SDLang solution.
+	Per-project packaging items (README/icon packing) live in the individual .csproj files.
+	-->
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<Deterministic>true</Deterministic>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+	</PropertyGroup>
+
+	<!-- Shared package/authoring metadata (only used by packable projects). -->
+	<PropertyGroup>
+		<AssemblyVersion>0.0.0.0</AssemblyVersion>
+		<FileVersion>0.0.0.0</FileVersion>
+		<Version>0.0.0</Version>
+		<Authors>EllipticBit</Authors>
+		<Company>EllipticBit, LLC</Company>
+		<Product>EllipticBit.SDLang</Product>
+		<Copyright>Copyright (c) 2026 EllipticBit, LLC and contributors</Copyright>
+		<PackageLicenseExpression>BSL-1.0</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageProjectUrl>https://github.com/ellipticbit/SDLang</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/ellipticbit/SDLang</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>sdl;sdlang;serialization;parser;configuration;utf8;dom</PackageTags>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<DebugType>embedded</DebugType>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);CS1591</NoWarn>
+	</PropertyGroup>
+
+	<!-- Projects opt-in to packaging explicitly; everything is non-packable by default. -->
+	<PropertyGroup>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+</Project>

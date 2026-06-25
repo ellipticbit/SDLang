@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Build/">
+    <File Path=".gitlab-ci.yml" />
+    <File Path="Directory.Build.props" />
+    <File Path="IncrementVersion.ps1" />
+    <File Path="README.md" />
+    <File Path="ReplaceVersion.ps1" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/tests/" />
+  <Project Path="src/EllipticBit.SDLang.AspNetCore/EllipticBit.SDLang.AspNetCore.csproj" />
+  <Project Path="src/EllipticBit.SDLang.DependencyInjection/EllipticBit.SDLang.DependencyInjection.csproj" />
+  <Project Path="src/EllipticBit.SDLang/EllipticBit.SDLang.csproj" />
+  <Project Path="tests\EllipticBit.SDLang.AspNetCore.Tests\EllipticBit.SDLang.AspNetCore.Tests.csproj" />
+  <Project Path="tests\EllipticBit.SDLang.Tests\EllipticBit.SDLang.Tests.csproj" />
+</Solution>

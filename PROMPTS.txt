@@ -9,3 +9,20 @@ There will be ample opportunity for performance optimizations to be applied to t
 There should be ample tests of both the basic Tag serialization/deserialization as well as object serialization/deserialization. Include tests for UTF-8 characters like emoji's and Kanji characters.
 
 Lastly, we need to generate the appropriate project properties for this project to be hosted on nuget.org, including the icon.png in the root folder and a markdown README.md for this project. The readme should include a brief description of the project, and the standard information typically included in a README for an open source project, how to add the library to a project, an appropriate number of example of how to integrate (typically via DI) and use the library, and contribution guidelines that include a note saying that any LLM based contributions must include the Prompt used to generate the contribution in the PROMPTS.txt file. The license is BSL-1.0.
+
+Question Answers:
+SDLangNET.slnx exists in the repo root, please use that Solution file.
+1. ID/Root namespace: EllipticBit.SDLang
+2. net10.0 only is acceptable.
+3. Test framework should be MSTest to run from the dotnet test commandline.
+4. Tag/SdlDocument/SdlNode should be mutable.
+8. The icon.png file is provided in the project root, use that file.
+The remaining questions are good as presented.
+
+-------------
+
+Now we need to add an integration package for ASP.NET Core (.NET 10) to allow the user to use the SDLang package as a HTTP request document language similar to JSON or XML. This should include the relevant updates to the dependency injection package, as well as updates to the README on how to use this. Also we need to add a note to the README that the prior version (there is only version 1.0.1) of EllipticBit.SDLang has been deprecated in favor of this package with a link to the old package.
+
+Question Answers:
+For decision 3, please add the support for Minimal APIs as well.
+The bolded choices are good for the remaining decisions. Please finalize the plan and being implementation.
