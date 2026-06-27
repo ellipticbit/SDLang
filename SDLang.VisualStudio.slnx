@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Build/">
+	<File Path="vsix/Directory.Build.props" />
+	<File Path=".gitlab-ci.yml" />
+	<File Path="README.md" />
+  </Folder>
+  <Folder Name="/docs/">
+	<File Path="docs/README.md" />
+	<File Path="docs/integration/getting-started.md" />
+	<File Path="docs/integration/content-type-targeting.md" />
+	<File Path="docs/integration/mef-semantic-validators.md" />
+	<File Path="docs/integration/brokered-service.md" />
+	<File Path="docs/integration/diagnostics-model.md" />
+	<File Path="docs/integration/permissive-parsing.md" />
+  </Folder>
+  <Folder Name="/vsix/" />
+  <Project Path="vsix/EllipticBit.SDLang.Analysis/EllipticBit.SDLang.Analysis.csproj" />
+  <Project Path="vsix/EllipticBit.SDLang.VisualStudio.Contracts/EllipticBit.SDLang.VisualStudio.Contracts.csproj" />
+  <Project Path="vsix/EllipticBit.SDLang.VisualStudio.LanguageServer/EllipticBit.SDLang.VisualStudio.LanguageServer.csproj" />
+  <Project Path="vsix/EllipticBit.SDLang.VisualStudio/EllipticBit.SDLang.VisualStudio.csproj" />
+  <Project Path="vsix/EllipticBit.SDLang.VisualStudio.LanguageServer.Tests/EllipticBit.SDLang.VisualStudio.LanguageServer.Tests.csproj" />
+</Solution>

@@ -1,0 +1,8 @@
+// SDLang TextMate registration (merged into the experimental/registry hive when the VSIX is installed).
+//
+// Visual Studio's built-in TextMate engine discovers bundled grammars through a "repository" folder. Registering
+// the VSIX's Grammars folder here makes VS scan it for the VSCode-style package.json manifest, which maps the
+// .sdl/.sdlang file extensions to the "sdlang" language (content type), the source.sdl grammar scope, and the
+// language configuration. The repository name is arbitrary but must be unique across installed extensions.
+[$RootKey$\TextMate\Repositories]
+"EllipticBit.SDLang"="$PackageFolder$\Grammars"

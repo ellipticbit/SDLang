@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Run settings for the net472 Visual Studio tooling tests.
+
+  `dotnet test` / `dotnet vstest` otherwise default to a .NET (Core) test host, which cannot load this
+  .NET Framework 4.7.2 assembly and reports "No test is available". Pinning the target framework and
+  platform here selects the full-framework test host so the parity tests are discovered and executed.
+-->
+<RunSettings>
+  <RunConfiguration>
+	<TargetFrameworkVersion>.NETFramework,Version=v4.7.2</TargetFrameworkVersion>
+	<TargetPlatform>x64</TargetPlatform>
+  </RunConfiguration>
+</RunSettings>

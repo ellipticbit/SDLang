@@ -35,6 +35,9 @@ public ref struct Utf8SdlReader
 	private bool _stringEscaped;
 	private bool _boolValue;
 
+	// Error-recovery diagnostics, lazily allocated and only populated when SdlReaderOptions.ErrorRecovery is set.
+	private List<SdlDiagnostic>? _diagnostics;
+
 	/// <summary>Initializes a new <see cref="Utf8SdlReader"/> over the supplied UTF-8 bytes.</summary>
 	public Utf8SdlReader(ReadOnlySpan<byte> utf8Sdl, SdlReaderOptions? options = null)
 	{
@@ -44,6 +47,7 @@ public ref struct Utf8SdlReader
 		_line = 1;
 		_lineStart = 0;
 		_depth = 0;
+		_diagnostics = null;
 		TokenType = SdlTokenType.None;
 		ValueKind = SdlValueKind.Null;
 	}
@@ -62,6 +66,94 @@ public ref struct Utf8SdlReader
 
 	/// <summary>Gets the raw UTF-8 bytes of the current value token (for diagnostics).</summary>
 	public readonly ReadOnlySpan<byte> ValueSpan => _data.Slice(_tokenStart, _tokenLength);
+
+	/// <summary>
+	/// Gets a value indicating whether the reader was configured for error recovery via
+	/// <see cref="SdlReaderOptions.ErrorRecovery"/>. The DOM builder consults this to decide whether to record a
+	/// diagnostic and resynchronize after an error rather than letting the exception propagate.
+	/// </summary>
+	internal readonly bool ErrorRecovery => _options.ErrorRecovery;
+
+	/// <summary>Gets the diagnostics collected during error-recovering parsing; empty when none were recorded.</summary>
+	internal readonly IReadOnlyList<SdlDiagnostic> Diagnostics
+		=> _diagnostics is null ? Array.Empty<SdlDiagnostic>() : _diagnostics;
+
+	/// <summary>Records a recovered parse error as an <see cref="SdlDiagnostic"/> for later retrieval.</summary>
+	internal void AddDiagnostic(SdlReaderException exception)
+	{
+		_diagnostics ??= [];
+		_diagnostics.Add(new SdlDiagnostic(
+			exception.RawMessage,
+			SdlDiagnosticSeverity.Error,
+			exception.LineNumber,
+			exception.LinePosition,
+			exception.BytePosition));
+	}
+
+	/// <summary>
+	/// Advances past an offending region to the next statement boundary — a line break, semicolon, matching closing
+	/// brace, or end-of-document — so that error-recovering parsing can resume. Always makes forward progress, which
+	/// guarantees termination of the recovery loop.
+	/// </summary>
+	/// <returns><see langword="true"/> if more input remains to parse; otherwise <see langword="false"/>.</returns>
+	internal bool RecoverToNextStatement()
+	{
+		while (_pos < _data.Length)
+		{
+			byte b = _data[_pos];
+
+			if (b == SdlText.Lf)
+			{
+				_pos++;
+				_line++;
+				_lineStart = _pos;
+				TokenType = SdlTokenType.LineBreak;
+				return true;
+			}
+
+			if (b == SdlText.Cr)
+			{
+				_pos++;
+				if (_pos < _data.Length && _data[_pos] == SdlText.Lf)
+				{
+					_pos++;
+				}
+
+				_line++;
+				_lineStart = _pos;
+				TokenType = SdlTokenType.LineBreak;
+				return true;
+			}
+
+			if (b == SdlText.Semicolon)
+			{
+				_pos++;
+				TokenType = SdlTokenType.LineBreak;
+				return true;
+			}
+
+			if (b == SdlText.CloseBrace)
+			{
+				if (_depth > 0)
+				{
+					_pos++;
+					_depth--;
+					TokenType = SdlTokenType.CloseBrace;
+					return true;
+				}
+
+				// A stray closing brace at the top level is garbage; skip it and keep scanning.
+				_pos++;
+				continue;
+			}
+
+			// Skip the remainder of the offending token.
+			_pos++;
+		}
+
+		TokenType = SdlTokenType.EndOfDocument;
+		return false;
+	}
 
 	/// <summary>
 	/// Advances to the next token. Returns <see langword="false"/> when the end of the document is reached.

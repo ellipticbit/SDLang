@@ -1,0 +1,27 @@
+{
+	"name": "sdlang",
+	"displayName": "SDLang",
+	"description": "TextMate grammar and language configuration for SDLang (Simple Declarative Language).",
+	"version": "1.0.0",
+	"publisher": "EllipticBit",
+	"engines": {
+		"vscode": "*"
+	},
+	"contributes": {
+		"languages": [
+			{
+				"id": "sdlang",
+				"aliases": [ "SDLang", "SDL", "sdlang" ],
+				"extensions": [ ".sdl", ".sdlang" ],
+				"configuration": "./sdlang.language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "sdlang",
+				"scopeName": "source.sdl",
+				"path": "./sdlang.tmLanguage.json"
+			}
+		]
+	}
+}

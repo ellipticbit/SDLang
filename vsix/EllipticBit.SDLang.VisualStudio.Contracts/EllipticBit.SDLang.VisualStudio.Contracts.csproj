@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!--
+	EllipticBit.SDLang.VisualStudio.Contracts is the PUBLIC extensibility surface for the SDLang language
+	support. It is intentionally lightweight and standalone: it has NO dependency on the parser (Analysis) or
+	the editor (VSIX), so third-party extensions (for example the Visual D plug-in providing dub.sdl support)
+	can reference it cheaply to:
+	  - target the "sdlang" content type and file extensions (SdlContentTypes),
+	  - contribute semantic validation/completions/hover via MEF (ISdlSemanticValidator + metadata),
+	  - or consume the in-proc brokered language service over JSON-RPC (SdlBrokeredServices + ISdlLanguageService).
+
+	Unlike the other /vsix/ projects, this one is PACKABLE and ships XML documentation, so CS1591 is NOT
+	suppressed and every public member is documented.
+	-->
+
+	<PropertyGroup>
+		<RootNamespace>EllipticBit.SDLang.VisualStudio</RootNamespace>
+		<AssemblyName>EllipticBit.SDLang.VisualStudio.Contracts</AssemblyName>
+
+		<!-- Override the /vsix/ defaults: this assembly is published to NuGet with documentation. -->
+		<IsPackable>true</IsPackable>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+		<PackageId>EllipticBit.SDLang.VisualStudio.Contracts</PackageId>
+		<Description>Public MEF, content-type, and brokered-service contracts for integrating with the EllipticBit SDLang language support in Visual Studio.</Description>
+		<PackageTags>sdlang;sdl;visualstudio;vsix;mef;brokered-service;language</PackageTags>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- MEF v1 attributes + metadata views ship in the .NET Framework, so reference the framework assembly. -->
+		<Reference Include="System.ComponentModel.Composition" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Brokered service moniker + JSON-RPC descriptor types. -->
+		<PackageReference Include="Microsoft.ServiceHub.Framework" Version="4.8.55" />
+	</ItemGroup>
+
+</Project>

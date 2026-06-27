@@ -10,7 +10,7 @@ There should be ample tests of both the basic Tag serialization/deserialization 
 
 Lastly, we need to generate the appropriate project properties for this project to be hosted on nuget.org, including the icon.png in the root folder and a markdown README.md for this project. The readme should include a brief description of the project, and the standard information typically included in a README for an open source project, how to add the library to a project, an appropriate number of example of how to integrate (typically via DI) and use the library, and contribution guidelines that include a note saying that any LLM based contributions must include the Prompt used to generate the contribution in the PROMPTS.txt file. The license is BSL-1.0.
 
-Question Answers:
+Questions Answered:
 SDLangNET.slnx exists in the repo root, please use that Solution file.
 1. ID/Root namespace: EllipticBit.SDLang
 2. net10.0 only is acceptable.
@@ -23,6 +23,27 @@ The remaining questions are good as presented.
 
 Now we need to add an integration package for ASP.NET Core (.NET 10) to allow the user to use the SDLang package as a HTTP request document language similar to JSON or XML. This should include the relevant updates to the dependency injection package, as well as updates to the README on how to use this. Also we need to add a note to the README that the prior version (there is only version 1.0.1) of EllipticBit.SDLang has been deprecated in favor of this package with a link to the old package.
 
-Question Answers:
+Questions Answered:
 For decision 3, please add the support for Minimal APIs as well.
 The bolded choices are good for the remaining decisions. Please finalize the plan and being implementation.
+
+-------------
+
+Now we need to create a VSIX project for Visual Studio 2026 (2022 support if possible) that allows Visual Studio to support SDLang as a complete language similar to it's support for JSON and XML. This will be a complex project so plan accordingly. This project should live in the vsix folder, not the src folder, and have the following components.
+
+1. For syntax highlighting we want to use a TextMate grammer.
+2. We need to add a Language Config for basic SDLang features like bracket matching/auto-close, string quotes matching/auto-close, indentation rules, and any other features of SDLang that can be covered with Language Config.
+3. We need to add an internal LSP (this LSP should be lightweight rendering an external process unnecessary) that enables robust error detection, by displaying error squiggles and adding errors to the error list. Note that the parser in EllipticBit.SDLang is strict and will throw on the first error when parsing the document. For the LSP use case it may be necessary to add a permissive mode to the parser to allow it to continue parsing and displaying errors.
+4. The LSP should also be extensible via MEF contracts to allow other VSIX plugins to enable semantic validation for their documents. For example, dub.sdl from the D programming languages package manager DUB, has specific tags and valid attribute values that should be evaluated and made available in IntelliSense. And validation errors should likewise be published to the Errors list window via the LSP.
+5. Content Type Targeting should be implemented for the "sdlang" target type.
+6. Implement a Brokered Service to enable legacy plugins, such as the Visual D plugin to leverage these capabilities for it's dub.sdl support. It is OK for this to be a 2026 only feature if 2022 does not support Brokered services.
+7. Create a comprehensive Wiki of Markdown files describing the integration endpoints and API's for MEF/Content Type Targeting/Brokered Service implementations to make it easier for other plugin implementors to integrate with SDLang. This repo is published to both GitLab and GitHub, so the wiki should work on both platforms if possible.
+8. Public API endpoints should have the appropriate XML documentation comments attached to them.
+
+Questions Answered:
+1. Classic VS SDK is preferred and installed on this machine for both VS2022 and VS2026, it is also available on the build machines.
+2. Option B is ideal. Shared source with polyfills that does not touch the original library.
+3. Yes, permissive parsing should be available on the public API, but it MUST be opt-in only for security reasons.
+4. In-Repo docs folder is acceptable.
+5. Yes, a separate SLNX file for the VisualStudio project is preferred.
+Finalize plan.

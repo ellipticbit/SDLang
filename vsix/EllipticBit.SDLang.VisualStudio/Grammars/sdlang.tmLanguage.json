@@ -1,0 +1,209 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "SDLang",
+	"scopeName": "source.sdl",
+	"fileTypes": [
+		"sdl",
+		"sdlang"
+	],
+	"patterns": [
+		{ "include": "#comments" },
+		{ "include": "#statement" }
+	],
+	"repository": {
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.line.double-slash.sdl",
+					"begin": "//",
+					"end": "$",
+					"beginCaptures": {
+						"0": { "name": "punctuation.definition.comment.sdl" }
+					}
+				},
+				{
+					"name": "comment.line.number-sign.sdl",
+					"begin": "#",
+					"end": "$",
+					"beginCaptures": {
+						"0": { "name": "punctuation.definition.comment.sdl" }
+					}
+				},
+				{
+					"name": "comment.line.double-dash.sdl",
+					"begin": "--",
+					"end": "$",
+					"beginCaptures": {
+						"0": { "name": "punctuation.definition.comment.sdl" }
+					}
+				},
+				{
+					"name": "comment.block.sdl",
+					"begin": "/\\*",
+					"end": "\\*/",
+					"beginCaptures": {
+						"0": { "name": "punctuation.definition.comment.begin.sdl" }
+					},
+					"endCaptures": {
+						"0": { "name": "punctuation.definition.comment.end.sdl" }
+					}
+				}
+			]
+		},
+		"statement": {
+			"patterns": [
+				{ "include": "#block" },
+				{ "include": "#attribute" },
+				{ "include": "#tag-name" },
+				{ "include": "#values" }
+			]
+		},
+		"block": {
+			"begin": "\\{",
+			"end": "\\}",
+			"beginCaptures": {
+				"0": { "name": "punctuation.section.block.begin.sdl" }
+			},
+			"endCaptures": {
+				"0": { "name": "punctuation.section.block.end.sdl" }
+			},
+			"patterns": [
+				{ "include": "#comments" },
+				{ "include": "#statement" }
+			]
+		},
+		"tag-name": {
+			"comment": "A tag or namespaced tag at the start of a statement: name or ns:name.",
+			"match": "(?<![\\w.$-])(?:([A-Za-z_$][\\w.$-]*)(:))?([A-Za-z_$][\\w.$-]*)(?=\\s|$|\\{|;|=|//|/\\*|#|--)",
+			"captures": {
+				"1": { "name": "entity.name.namespace.sdl" },
+				"2": { "name": "punctuation.separator.namespace.sdl" },
+				"3": { "name": "entity.name.tag.sdl" }
+			}
+		},
+		"attribute": {
+			"comment": "An attribute is name=value or ns:name=value. Highlights only the key and '='.",
+			"match": "(?:([A-Za-z_$][\\w.$-]*)(:))?([A-Za-z_$][\\w.$-]*)(=)",
+			"captures": {
+				"1": { "name": "entity.name.namespace.sdl" },
+				"2": { "name": "punctuation.separator.namespace.sdl" },
+				"3": { "name": "entity.other.attribute-name.sdl" },
+				"4": { "name": "keyword.operator.assignment.sdl" }
+			}
+		},
+		"values": {
+			"patterns": [
+				{ "include": "#string-quoted" },
+				{ "include": "#string-raw" },
+				{ "include": "#char" },
+				{ "include": "#binary" },
+				{ "include": "#constants" },
+				{ "include": "#datetime" },
+				{ "include": "#date" },
+				{ "include": "#duration" },
+				{ "include": "#number" },
+				{ "include": "#punctuation" }
+			]
+		},
+		"string-quoted": {
+			"name": "string.quoted.double.sdl",
+			"begin": "\"",
+			"end": "\"",
+			"beginCaptures": {
+				"0": { "name": "punctuation.definition.string.begin.sdl" }
+			},
+			"endCaptures": {
+				"0": { "name": "punctuation.definition.string.end.sdl" }
+			},
+			"patterns": [
+				{
+					"name": "constant.character.escape.sdl",
+					"match": "\\\\(?:[\"\\\\/bfnrt]|u[0-9A-Fa-f]{4}|\\r?\\n)"
+				}
+			]
+		},
+		"string-raw": {
+			"name": "string.quoted.other.raw.sdl",
+			"begin": "`",
+			"end": "`",
+			"beginCaptures": {
+				"0": { "name": "punctuation.definition.string.begin.sdl" }
+			},
+			"endCaptures": {
+				"0": { "name": "punctuation.definition.string.end.sdl" }
+			}
+		},
+		"char": {
+			"name": "string.quoted.single.sdl",
+			"match": "'(?:\\\\(?:[\"'\\\\/bfnrt]|u[0-9A-Fa-f]{4})|[^'\\\\])'",
+			"captures": {
+				"0": { "name": "string.quoted.single.sdl" }
+			}
+		},
+		"binary": {
+			"name": "string.other.binary.sdl",
+			"begin": "\\[",
+			"end": "\\]",
+			"beginCaptures": {
+				"0": { "name": "punctuation.definition.binary.begin.sdl" }
+			},
+			"endCaptures": {
+				"0": { "name": "punctuation.definition.binary.end.sdl" }
+			},
+			"patterns": [
+				{
+					"name": "constant.other.base64.sdl",
+					"match": "[A-Za-z0-9+/=\\s]+"
+				}
+			]
+		},
+		"constants": {
+			"patterns": [
+				{
+					"name": "constant.language.boolean.true.sdl",
+					"match": "(?<![\\w.$-])(?:true|on)(?![\\w.$-])"
+				},
+				{
+					"name": "constant.language.boolean.false.sdl",
+					"match": "(?<![\\w.$-])(?:false|off)(?![\\w.$-])"
+				},
+				{
+					"name": "constant.language.null.sdl",
+					"match": "(?<![\\w.$-])null(?![\\w.$-])"
+				}
+			]
+		},
+		"datetime": {
+			"comment": "Date-time, optionally with a timezone offset, e.g. 2015/12/06 12:30:00 or 2015/12/06 12:30:00-UTC.",
+			"name": "constant.other.datetime.sdl",
+			"match": "(?<![\\w.$-])\\d{4}/\\d{1,2}/\\d{1,2}\\s+\\d{1,2}:\\d{2}(?::\\d{2}(?:\\.\\d+)?)?(?:-[A-Za-z]+(?:[+-]\\d{1,2}(?::\\d{2})?)?|[+-]\\d{1,2}(?::\\d{2})?)?(?![\\w.$-])"
+		},
+		"date": {
+			"comment": "Calendar date, e.g. 2015/12/06.",
+			"name": "constant.other.date.sdl",
+			"match": "(?<![\\w.$-])\\d{4}/\\d{1,2}/\\d{1,2}(?![\\w.$/-])"
+		},
+		"duration": {
+			"comment": "Duration/time span, e.g. 12:14:34.123 or 2d:12:14:34.123.",
+			"name": "constant.other.duration.sdl",
+			"match": "(?<![\\w.$-])(?:\\d+d:)?\\d{1,2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?![\\w.$-])"
+		},
+		"number": {
+			"comment": "Integers and floats with optional sign and SDLang type suffixes (L, f, d, BD).",
+			"name": "constant.numeric.sdl",
+			"match": "(?<![\\w.$])[-+]?(?:\\d+\\.\\d+(?:[fdFD]|[bB][dD])?|\\d+(?:[lLfdFD]|[bB][dD])?)(?![\\w.$])"
+		},
+		"punctuation": {
+			"patterns": [
+				{
+					"name": "punctuation.terminator.statement.sdl",
+					"match": ";"
+				},
+				{
+					"name": "keyword.operator.assignment.sdl",
+					"match": "="
+				}
+			]
+		}
+	}
+}

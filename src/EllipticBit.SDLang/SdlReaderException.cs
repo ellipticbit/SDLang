@@ -14,10 +14,14 @@ public sealed class SdlReaderException : SdlException
 	/// <summary>Gets the 0-based byte offset within the document where the error occurred.</summary>
 	public long BytePosition { get; }
 
+	/// <summary>Gets the original message without the appended "(Line, Position)" location suffix.</summary>
+	internal string RawMessage { get; }
+
 	/// <summary>Initializes a new instance of the <see cref="SdlReaderException"/> class.</summary>
 	public SdlReaderException(string message, long lineNumber, long linePosition, long bytePosition)
 		: base(BuildMessage(message, lineNumber, linePosition))
 	{
+		RawMessage = message;
 		LineNumber = lineNumber;
 		LinePosition = linePosition;
 		BytePosition = bytePosition;

@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!--
+	Test project for the Visual Studio language tooling. Targets net472 (inherited from vsix/Directory.Build.props)
+	so it exercises the SAME shared-source build of the parser that ships inside the extension, including the
+	net472 Compat shims (Rune, SearchValues<T>, ArrayBufferWriter<T>, HashCode, RuntimeHelpers.GetSubArray, and
+	the span TrimStart / exception-guard polyfills).
+
+	For now it references EllipticBit.SDLang.Analysis directly to validate the shims at runtime (parse parity).
+	It also references EllipticBit.SDLang.VisualStudio.LanguageServer to exercise the in-proc engine (diagnostic
+	translation, UTF-8 position mapping, and MEF validator aggregation). The engine transitively brings in the
+	public EllipticBit.SDLang.VisualStudio.Contracts assembly.
+	-->
+
+	<PropertyGroup>
+		<RootNamespace>EllipticBit.SDLang.VisualStudio.LanguageServer.Tests</RootNamespace>
+		<AssemblyName>EllipticBit.SDLang.VisualStudio.LanguageServer.Tests</AssemblyName>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);CA1707;CA2007;CA1861;CS1591;NU1701</NoWarn>
+
+		<!--
+		Required for the net472 test host: merge the explicit System.Threading.Tasks.Extensions redirect in
+		app.config with the auto-generated System.Memory / Unsafe redirects. Without unified redirects the host
+		fails type discovery with ReflectionTypeLoadException and reports "No test is available".
+		-->
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.7.0" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\EllipticBit.SDLang.Analysis\EllipticBit.SDLang.Analysis.csproj" />
+		<ProjectReference Include="..\EllipticBit.SDLang.VisualStudio.LanguageServer\EllipticBit.SDLang.VisualStudio.LanguageServer.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -51,6 +51,58 @@ public sealed class SdlDocument
 		}
 	}
 
+	/// <summary>
+	/// Parses an SDLang document from a UTF-8 byte span, collecting diagnostics instead of throwing on the first
+	/// error. Diagnostics are only gathered when <see cref="SdlReaderOptions.ErrorRecovery"/> is enabled on
+	/// <paramref name="options"/>; otherwise this behaves like <see cref="Parse(ReadOnlySpan{byte}, SdlReaderOptions?)"/>
+	/// (it throws on the first error and <paramref name="diagnostics"/> is empty on success).
+	/// </summary>
+	/// <param name="utf8Sdl">The UTF-8 encoded SDLang source.</param>
+	/// <param name="diagnostics">
+	/// On return, the problems discovered during error recovery, in document order; empty when the document is
+	/// well-formed or when <see cref="SdlReaderOptions.ErrorRecovery"/> is not enabled.
+	/// </param>
+	/// <param name="options">The reader options; enable <see cref="SdlReaderOptions.ErrorRecovery"/> to collect diagnostics.</param>
+	/// <returns>A best-effort <see cref="SdlDocument"/> built from the recoverable portions of the source.</returns>
+	public static SdlDocument Parse(ReadOnlySpan<byte> utf8Sdl, out IReadOnlyList<SdlDiagnostic> diagnostics, SdlReaderOptions? options = null)
+	{
+		SdlDocument document = new();
+		Utf8SdlReader reader = new(utf8Sdl, options);
+		SdlDomBuilder.Build(ref reader, document._root);
+		diagnostics = reader.Diagnostics;
+		return document;
+	}
+
+	/// <summary>
+	/// Parses an SDLang document from a <see cref="string"/>, collecting diagnostics instead of throwing on the
+	/// first error. Diagnostics are only gathered when <see cref="SdlReaderOptions.ErrorRecovery"/> is enabled on
+	/// <paramref name="options"/>; otherwise this behaves like <see cref="Parse(string, SdlReaderOptions?)"/>
+	/// (it throws on the first error and <paramref name="diagnostics"/> is empty on success).
+	/// </summary>
+	/// <param name="sdl">The SDLang source text.</param>
+	/// <param name="diagnostics">
+	/// On return, the problems discovered during error recovery, in document order; empty when the document is
+	/// well-formed or when <see cref="SdlReaderOptions.ErrorRecovery"/> is not enabled.
+	/// </param>
+	/// <param name="options">The reader options; enable <see cref="SdlReaderOptions.ErrorRecovery"/> to collect diagnostics.</param>
+	/// <returns>A best-effort <see cref="SdlDocument"/> built from the recoverable portions of the source.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="sdl"/> is <see langword="null"/>.</exception>
+	public static SdlDocument Parse(string sdl, out IReadOnlyList<SdlDiagnostic> diagnostics, SdlReaderOptions? options = null)
+	{
+		ArgumentNullException.ThrowIfNull(sdl);
+		int max = Encoding.UTF8.GetMaxByteCount(sdl.Length);
+		byte[] rented = ArrayPool<byte>.Shared.Rent(max);
+		try
+		{
+			int written = Encoding.UTF8.GetBytes(sdl, rented);
+			return Parse(rented.AsSpan(0, written), out diagnostics, options);
+		}
+		finally
+		{
+			ArrayPool<byte>.Shared.Return(rented);
+		}
+	}
+
 	/// <summary>Asynchronously parses an SDLang document from a stream of UTF-8 bytes.</summary>
 	public static async Task<SdlDocument> ParseAsync(Stream utf8Stream, SdlReaderOptions? options = null, CancellationToken cancellationToken = default)
 	{

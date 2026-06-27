@@ -1,0 +1,51 @@
+<Project>
+
+	<!--
+	Build settings for the Visual Studio extension projects under /vsix/.
+
+	This file intentionally does NOT import the repository-root Directory.Build.props.
+	MSBuild walks up from each project directory and stops at the FIRST Directory.Build.props
+	it finds, so projects under /vsix/ pick up THIS file instead of the root one. That is by
+	design: the root file forces <TargetFramework>net10.0</TargetFramework> and NuGet packaging
+	metadata that are inappropriate for classic VS SDK (.NET Framework, in-proc) extensions.
+
+	The Visual Studio projects target net472 so a single binary loads in both Visual Studio 2022
+	(17.x) and Visual Studio 2026 (18.x).
+	-->
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+
+		<!--
+		ImplicitUsings is ENABLED (not disabled) because EllipticBit.SDLang.Analysis links the
+		core parser sources via shared compilation, and those sources rely on the implicit usings
+		set (System, System.Collections.Generic, System.Linq, System.Threading.Tasks, ...).
+		-->
+		<ImplicitUsings>enable</ImplicitUsings>
+
+		<Deterministic>true</Deterministic>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+
+		<!-- VS extension assemblies are deployed inside the VSIX, never published to NuGet by default. -->
+		<IsPackable>false</IsPackable>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+		<!-- Keep the .NET Framework targeting-pack resolution self-contained on build agents. -->
+		<EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
+
+	<!-- Shared authoring metadata (purely informational; these projects are not the NuGet packages). -->
+	<PropertyGroup>
+		<Authors>EllipticBit</Authors>
+		<Company>EllipticBit, LLC</Company>
+		<Product>EllipticBit.SDLang for Visual Studio</Product>
+		<Copyright>Copyright (c) 2026 EllipticBit, LLC and contributors</Copyright>
+		<RepositoryUrl>https://github.com/ellipticbit/SDLang</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
+
+</Project>

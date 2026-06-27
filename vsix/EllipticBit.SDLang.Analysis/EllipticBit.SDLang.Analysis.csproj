@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!--
+	EllipticBit.SDLang.Analysis re-hosts the EllipticBit.SDLang parser, DOM, writer, and diagnostics on .NET
+	Framework (net472) so the Visual Studio extension can use the strict + permissive parser in-process, without
+	taking a dependency on the net10.0 NuGet package.
+
+	Per the design decision, this project uses SHARED SOURCE: it links the relevant core *.cs files directly and
+	supplies the missing modern BCL surface through polyfill packages. The original library is never modified; any
+	residual net472 gaps are filled with net472-only shim files under Compat/.
+	-->
+
+	<PropertyGroup>
+		<RootNamespace>EllipticBit.SDLang</RootNamespace>
+		<AssemblyName>EllipticBit.SDLang.Analysis</AssemblyName>
+
+		<!-- The shared core sources require unsafe blocks disabled and modern language features. -->
+		<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+		<!-- Some recovered diagnostics intentionally rely on polyfilled APIs; keep analyzers from over-reporting. -->
+		<NoWarn>$(NoWarn);CS1591;NU1701</NoWarn>
+	</PropertyGroup>
+
+	<!--
+	Shared source: link the parsing/DOM/diagnostics/writer subset of the core library. Serialization is excluded
+	(reflection-heavy and unnecessary for editor tooling), as are the obj/bin generated sources.
+	-->
+	<ItemGroup>
+		<Compile Include="..\..\src\EllipticBit.SDLang\**\*.cs"
+				 Exclude="..\..\src\EllipticBit.SDLang\Serialization\**\*.cs;..\..\src\EllipticBit.SDLang\obj\**\*.cs;..\..\src\EllipticBit.SDLang\bin\**\*.cs"
+				 Link="Shared\%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<!--
+	Polyfill packages that provide the modern BCL surface the shared sources depend on:
+	  System.Memory                    -> Span<T>, ReadOnlySpan<T>, Memory<T>, IBufferWriter<T>
+	  System.Buffers                   -> ArrayPool<T>, Utf8Parser/Utf8Formatter (System.Buffers.Text)
+	  System.Threading.Tasks.Extensions-> ValueTask; also flips Polyfill's FeatureValueTask switch so its
+										  Stream.WriteAsync(ReadOnlyMemory<byte>, CancellationToken) shim is emitted
+	  Polyfill                         -> Index/Range, init/required members, nullability + CallerArgumentExpression
+										  attributes, Encoding span overloads, and the Stream async span overloads
+	  Portable.System.DateTimeOnly     -> System.DateOnly / System.TimeOnly
+
+	Gaps that Polyfill does NOT cover on net472 are supplied by hand-written shims under Compat/:
+	  System.Text.Rune, System.Buffers.SearchValues<T>, System.Buffers.ArrayBufferWriter<T>,
+	  System.HashCode, RuntimeHelpers.GetSubArray (array range-indexing), ReadOnlySpan<byte>.TrimStart(byte),
+	  and the static ArgumentNullException.ThrowIfNull / ArgumentException.ThrowIfNullOrEmpty guards.
+	-->
+	<ItemGroup>
+		<PackageReference Include="System.Memory" Version="4.6.0" />
+		<PackageReference Include="System.Buffers" Version="4.6.0" />
+		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
+		<PackageReference Include="Polyfill" Version="7.21.0" PrivateAssets="all" />
+		<PackageReference Include="Portable.System.DateTimeOnly" Version="8.0.1" />
+	</ItemGroup>
+
+	<!--
+	Alias the simple names ArgumentNullException / ArgumentException to the Compat polyfills so the UNMODIFIED
+	core sources can keep calling the .NET 6/7 static guards (ThrowIfNull / ThrowIfNullOrEmpty). The polyfill
+	types derive from the real BCL exceptions, so `catch`, `is`, and `new ...(...)` semantics are preserved.
+	Requires ImplicitUsings (enabled in Directory.Build.props) for <Using> items to take effect.
+	-->
+	<ItemGroup>
+		<Using Include="EllipticBit.SDLang.Compat.ArgumentNullExceptionPolyfill" Alias="ArgumentNullException" />
+		<Using Include="EllipticBit.SDLang.Compat.ArgumentExceptionPolyfill" Alias="ArgumentException" />
+	</ItemGroup>
+
+</Project>

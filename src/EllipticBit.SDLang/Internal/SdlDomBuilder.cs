@@ -22,43 +22,74 @@ internal static class SdlDomBuilder
 	{
 		while (true)
 		{
-			switch (reader.TokenType)
+			if (reader.ErrorRecovery)
 			{
-				case SdlTokenType.LineBreak:
-					if (!reader.Read())
+				SequenceStep step;
+				try
+				{
+					step = ParseSequenceStep(ref reader, parent, topLevel);
+				}
+				catch (SdlReaderException ex)
+				{
+					reader.AddDiagnostic(ex);
+					if (!reader.RecoverToNextStatement())
 					{
-						if (!topLevel)
-						{
-							throw Error(ref reader, "Unterminated child block; expected '}'");
-						}
-
 						return;
 					}
 
 					continue;
+				}
 
-				case SdlTokenType.CloseBrace:
-					if (topLevel)
-					{
-						throw Error(ref reader, "Unexpected '}' at the top level");
-					}
-
+				if (step == SequenceStep.Return)
+				{
 					return;
+				}
+			}
+			else if (ParseSequenceStep(ref reader, parent, topLevel) == SequenceStep.Return)
+			{
+				return;
+			}
+		}
+	}
 
-				case SdlTokenType.EndOfDocument:
+	private static SequenceStep ParseSequenceStep(ref Utf8SdlReader reader, Tag parent, bool topLevel)
+	{
+		switch (reader.TokenType)
+		{
+			case SdlTokenType.LineBreak:
+				if (!reader.Read())
+				{
 					if (!topLevel)
 					{
 						throw Error(ref reader, "Unterminated child block; expected '}'");
 					}
 
-					return;
+					return SequenceStep.Return;
+				}
 
-				default:
-					Tag tag = new();
-					ParseTag(ref reader, tag);
-					parent.Children.Add(tag);
-					continue;
-			}
+				return SequenceStep.Continue;
+
+			case SdlTokenType.CloseBrace:
+				if (topLevel)
+				{
+					throw Error(ref reader, "Unexpected '}' at the top level");
+				}
+
+				return SequenceStep.Return;
+
+			case SdlTokenType.EndOfDocument:
+				if (!topLevel)
+				{
+					throw Error(ref reader, "Unterminated child block; expected '}'");
+				}
+
+				return SequenceStep.Return;
+
+			default:
+				Tag tag = new();
+				ParseTag(ref reader, tag);
+				parent.Children.Add(tag);
+				return SequenceStep.Continue;
 		}
 	}
 
@@ -156,4 +187,14 @@ internal static class SdlDomBuilder
 
 	private static SdlReaderException Error(ref Utf8SdlReader reader, string message)
 		=> new(message, reader.CurrentLine, 0, 0);
+
+	/// <summary>Outcome of parsing a single step of a tag sequence, used to drive the error-recovery loop.</summary>
+	private enum SequenceStep
+	{
+		/// <summary>Continue the sequence loop with the next token.</summary>
+		Continue,
+
+		/// <summary>Terminate the current sequence (closing brace, end-of-document, or top-level completion).</summary>
+		Return,
+	}
 }

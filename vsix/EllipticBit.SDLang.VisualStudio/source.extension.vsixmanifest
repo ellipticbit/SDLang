@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+  <Metadata>
+    <Identity Id="EllipticBit.SDLang.VisualStudio.4c2f0d1e-7b6a-4d3e-9f10-9a7c2b5e8d31" Version="1.0.0" Language="en-US" Publisher="EllipticBit, LLC" />
+    <DisplayName>SDLang Language Support</DisplayName>
+    <Description xml:space="preserve">First-class Visual Studio support for SDLang (Simple Declarative Language): TextMate syntax highlighting, bracket and quote auto-close, comment toggling, live error squiggles and Error List integration, and an extensible language service for .sdl and .sdlang files. Semantic validation is extensible through MEF (ISdlSemanticValidator), content-type targeting (sdlang), and a brokered language service for legacy plug-ins.</Description>
+    <MoreInfo>https://github.com/ellipticbit/SDLang</MoreInfo>
+    <Tags>SDLang;SDL;language;syntax highlighting;TextMate;dub;Visual D;declarative</Tags>
+  </Metadata>
+  <Installation>
+    <!-- 17.0..19.0 covers Visual Studio 2022 (17.x) and Visual Studio 2026 (18.x). -->
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 19.0)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0, 19.0)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0, 19.0)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" Version="[4.7.2,)" d:Source="Manual" />
+  </Dependencies>
+  <Prerequisites>
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" DisplayName="Visual Studio core editor" Version="[17.0, 19.0)" />
+  </Prerequisites>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="|%CurrentProject%|" d:Source="Project" d:ProjectName="%CurrentProject%" />
+    <Asset Type="Microsoft.VisualStudio.VsPackage" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" d:Source="Project" d:ProjectName="%CurrentProject%" />
+  </Assets>
+</PackageManifest>
