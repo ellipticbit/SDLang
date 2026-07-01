@@ -50,7 +50,23 @@
 	<ItemGroup>
 		<PackageReference Include="System.Memory" Version="4.6.0" />
 		<PackageReference Include="System.Buffers" Version="4.6.0" />
-		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
+		<!--
+		Pinned to 4.6.0 (assembly version 4.2.1.0), NOT 4.6.3 (assembly 4.2.4.0). This assembly defines
+		ValueTask<T>. Inside Visual Studio it is bound through devenv's binding redirect, whose upper bound is
+		4.2.1.0 on VS 17.x. 4.2.4.0 is ABOVE that ceiling, so the extension's ValueTask<T> cannot unify with the
+		type Visual Studio passes to IBrokeredServiceContainer.Proffer(...); SdlLanguagePackage then fails to load
+		("SetSite failed for package [SdlLanguagePackage]"). 4.6.0 is also the minimum required by
+		Microsoft.VisualStudio.Threading (so it does not trigger NU1605) and still flips Polyfill's
+		FeatureValueTask switch that emits the Stream.WriteAsync(ReadOnlyMemory<byte>, CancellationToken) shim.
+		-->
+		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.0" />
+		<!--
+		Explicit floor at 6.1.0 (assembly version 6.0.1.0). With S.T.T.Extensions at 4.6.0 the transitive graph
+		already resolves Unsafe to 6.1.0, but pin it directly so a future transitive bump cannot silently raise it
+		back to 6.1.2 (assembly 6.0.3.0), which is ABOVE the VS 17.x binding-redirect ceiling of 6.0.1.0 and would
+		reintroduce the SdlLanguagePackage load failure.
+		-->
+		<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.0" />
 		<PackageReference Include="Polyfill" Version="7.21.0" PrivateAssets="all" />
 		<PackageReference Include="Portable.System.DateTimeOnly" Version="8.0.1" />
 	</ItemGroup>

@@ -23,6 +23,14 @@
 		<AssemblyName>EllipticBit.SDLang.VisualStudio</AssemblyName>
 
 		<!-- Classic in-proc VSIX packaging via VSSDK.BuildTools on an SDK-style project. -->
+		<!--
+		REQUIRED for SDK-style projects: Microsoft.VSSDK.BuildTools defaults VSSDKBuildToolsAutoSetup to false and
+		only imports its packaging engine (Microsoft.VSSDK.targets: GeneratePkgDef, CreateVsixContainer,
+		DeployVsixExtensionFiles, chained via PrepareForRunDependsOn) when this flag is true. The classic .csproj
+		template imports those targets directly; an SDK-style project must opt in explicitly. Without this, the
+		project compiles as a plain net472 class library and emits only a .dll (no .pkgdef, no .vsix).
+		-->
+		<VSSDKBuildToolsAutoSetup>true</VSSDKBuildToolsAutoSetup>
 		<GeneratePkgDefFile>true</GeneratePkgDefFile>
 		<IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
 		<IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>

@@ -17,6 +17,8 @@
   <Project Path="vsix/EllipticBit.SDLang.Analysis/EllipticBit.SDLang.Analysis.csproj" />
   <Project Path="vsix/EllipticBit.SDLang.VisualStudio.Contracts/EllipticBit.SDLang.VisualStudio.Contracts.csproj" />
   <Project Path="vsix/EllipticBit.SDLang.VisualStudio.LanguageServer/EllipticBit.SDLang.VisualStudio.LanguageServer.csproj" />
-  <Project Path="vsix/EllipticBit.SDLang.VisualStudio/EllipticBit.SDLang.VisualStudio.csproj" />
+  <Project Path="vsix/EllipticBit.SDLang.VisualStudio/EllipticBit.SDLang.VisualStudio.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
   <Project Path="vsix/EllipticBit.SDLang.VisualStudio.LanguageServer.Tests/EllipticBit.SDLang.VisualStudio.LanguageServer.Tests.csproj" />
 </Solution>

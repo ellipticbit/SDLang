@@ -28,6 +28,11 @@ namespace EllipticBit.SDLang.VisualStudio;
 [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
 [Guid(PackageGuidString)]
 [ProvideAutoLoad(VSConstants.UICONTEXT.ShellInitialized_string, PackageAutoLoadFlags.BackgroundLoad)]
+// Registers the brokered-service moniker in the pkgdef. IBrokeredServiceContainer.Proffer(...) requires the
+// moniker to be registered first and otherwise throws InvalidOperationException (surfaced as
+// "SetSite failed for package [SdlLanguagePackage]", HRESULT 0x80131509). Audience is Process because the only
+// consumers are other in-proc extensions in the same devenv process (for example Visual D's dub.sdl support).
+[ProvideBrokeredService(SdlBrokeredServices.LanguageServiceMonikerName, SdlBrokeredServices.LanguageServiceMonikerVersion, Audience = ServiceAudience.Process)]
 public sealed class SdlLanguagePackage : AsyncPackage
 {
 	/// <summary>The package GUID, also referenced by the generated pkgdef.</summary>
