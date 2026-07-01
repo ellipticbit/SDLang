@@ -78,6 +78,19 @@
 
 	<ItemGroup>
 		<!--
+		The extension icon shown in the Extensions manager. It lives at the repository root (../../icon.png). The
+		VSSDK does NOT package a file just because <Icon> references it, so it is included as VSIX content here and
+		<Link> lands it at the VSIX root as icon.png; the manifest's <Icon> then references that packaged name.
+		-->
+		<Content Include="..\..\icon.png">
+			<Link>icon.png</Link>
+			<IncludeInVSIX>true</IncludeInVSIX>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--
 		TextMate grammar + language configuration. They must be COPIED INTO the VSIX (IncludeInVSIX=true) under the
 		Grammars\ folder so the editor's TextMate engine can load source.sdl for the sdlang content type.
 		-->

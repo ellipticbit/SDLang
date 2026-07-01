@@ -5,6 +5,7 @@
     <DisplayName>SDLang</DisplayName>
     <Description xml:space="preserve">First-class Visual Studio support for SDLang (Simple Declarative Language): TextMate syntax highlighting, bracket and quote auto-close, comment toggling, live error squiggles and Error List integration, and an extensible language service for .sdl and .sdlang files. Semantic validation is extensible through MEF (ISdlSemanticValidator), content-type targeting (sdlang), and a brokered language service for legacy plug-ins.</Description>
     <MoreInfo>https://github.com/ellipticbit/SDLang</MoreInfo>
+    <Icon>icon.png</Icon>
     <Tags>SDLang;SDL;language;syntax highlighting;TextMate;dub;Visual D;declarative</Tags>
   </Metadata>
   <Installation>

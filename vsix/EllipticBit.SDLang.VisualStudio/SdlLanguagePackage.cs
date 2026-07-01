@@ -33,6 +33,18 @@ namespace EllipticBit.SDLang.VisualStudio;
 // "SetSite failed for package [SdlLanguagePackage]", HRESULT 0x80131509). Audience is Process because the only
 // consumers are other in-proc extensions in the same devenv process (for example Visual D's dub.sdl support).
 [ProvideBrokeredService(SdlBrokeredServices.LanguageServiceMonikerName, SdlBrokeredServices.LanguageServiceMonikerVersion, Audience = ServiceAudience.Process)]
+// Registers the packaged TextMate grammar so Visual Studio actually loads it. The VSIX ships Grammars\* as
+// content, but VS's TextMate engine only discovers grammars from folders registered under TextMate\Repositories
+// (plus the GrammarMapping/ContentTypeMapping keys) in the pkgdef. Without this, .sdl files open with no
+// highlighting even though the grammar is on disk. The content-type name must match the "sdlang" content type
+// (which derives from "code++", the base type VS's TextMate classifiers target) and the scope must match the
+// grammar's scopeName ("source.sdl").
+[ProvideTextMateGrammar(
+	"SDLang",
+	"Grammars",
+	SdlContentTypes.TextMateScopeName,
+	SdlContentTypes.ContentTypeName,
+	"sdlang.language-configuration.json")]
 public sealed class SdlLanguagePackage : AsyncPackage
 {
 	/// <summary>The package GUID, also referenced by the generated pkgdef.</summary>
