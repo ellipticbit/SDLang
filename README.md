@@ -9,7 +9,7 @@ SDLang is a concise, human-friendly document language similar to XML or JSON. El
 - **Work with a mutable DOM** (`SdlDocument`, `Tag`, `SdlValue`) — the SDLang analog of `JsonDocument`/`JsonElement`.
 - **Serialize and deserialize** .NET object graphs with attributes and options that mirror `System.Text.Json`.
 
-[![pipeline status](https://gitlab.com/EllipticBit/sdlang/badges/main/pipeline.svg)](https://gitlab.com/EllipticBit/sdlang/-/commits/main)
+![pipeline status](https://gitlab.com/EllipticBit/sdlang/badges/master/pipeline.svg)
 
 > Targets **.NET 10** (`net10.0`). AOT support is out of scope for this project at this time.
 
