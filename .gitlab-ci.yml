@@ -29,8 +29,8 @@ Test SDLang:
     - dotnet
 
   script:
-    - "dotnet restore"
-    - "dotnet test"
+    - "dotnet restore SDLang.slnx"
+    - "dotnet test SDLang.slnx"
 
 Deploy SDLang Packages:
   extends: .publish_template
@@ -47,8 +47,8 @@ Deploy SDLang Packages:
 
   script:
     - "pwsh -f ./ReplaceVersion.ps1"
-    - "dotnet restore"
-    - "dotnet pack -c Release -o ./"
+    - "dotnet restore SDLang.slnx"
+    - "dotnet pack SDLang.slnx -c Release -o ./"
     - "dotnet nuget push EllipticBit.SDLang.2.*.nupkg -s \"https://api.nuget.org/v3/index.json\" -k $NUGET_TOKEN --skip-duplicate"
     - "dotnet nuget push EllipticBit.SDLang.DependencyInjection.2.*.nupkg -s \"https://api.nuget.org/v3/index.json\" -k $NUGET_TOKEN --skip-duplicate"
     - "dotnet nuget push EllipticBit.SDLang.AspNetCore.2.*.nupkg -s \"https://api.nuget.org/v3/index.json\" -k $NUGET_TOKEN --skip-duplicate"
